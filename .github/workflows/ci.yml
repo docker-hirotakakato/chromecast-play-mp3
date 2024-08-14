@@ -1,0 +1,24 @@
+name: ci
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - latest
+
+jobs:
+  build:
+    runs-on:  ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          username:  ${{ secrets.DOCKERHUB_USERNAME }}
+          password:  ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64, linux/arm64, linux/arm/v7, linux/arm/v6
+          push:      true
+          tags:      ${{ secrets.DOCKERHUB_USERNAME }}/chromecast-play-mp3:latest
